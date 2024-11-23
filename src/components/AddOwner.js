@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-//import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 
 const AddOwner = () => {
     const [formData, setFormData] = useState({
         username: '',
         firstName: '',
-        lastName: '',        
+        lastName: '',
         address: '',
         birthdate: '',
     });
+
+    const [errorMessage, setErrorMessage] = useState('');
+    const [successMessage, setSuccessMessage] = useState('');
 
     const navigate = useNavigate();
 
@@ -18,16 +20,17 @@ const AddOwner = () => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-   
-     const handleSubmit = async (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         console.log('Submitting Data:', formData); // Debug log
         try {
             const response = await axios.post('http://localhost:3001/addOwner', formData);
-            alert(response.data);
+            setSuccessMessage(response.data); // Display success message from backend
+            setErrorMessage(''); // Clear any previous error message
         } catch (err) {
-            console.error('Error:', err.message);
-            alert('Error: ' + err.message);
+            console.error('Error:', err.response?.data || err.message);
+            setErrorMessage(err.response?.data || 'An unexpected error occurred.'); // Display error message
+            setSuccessMessage(''); // Clear any previous success message
         }
     };
 
@@ -35,19 +38,71 @@ const AddOwner = () => {
         setFormData({
             username: '',
             firstName: '',
-            lastName: '',            
+            lastName: '',
             address: '',
             birthdate: '',
         });
-         navigate('/business'); // Navigate back to the Employee screen
+        setErrorMessage('');
+        setSuccessMessage('');
+        navigate('/business'); // Navigate back to the business screen
     };
 
     return (
-        <div style={{ maxWidth: '800px', margin: '20px auto', fontFamily: 'Arial, sans-serif', padding: '10px', border: '1px solid #ccc', borderRadius: '5px', backgroundColor: '#f9f9f9' }}>
+        <div
+            style={{
+                maxWidth: '800px',
+                margin: '20px auto',
+                fontFamily: 'Arial, sans-serif',
+                padding: '10px',
+                border: '1px solid #ccc',
+                borderRadius: '5px',
+                backgroundColor: '#f9f9f9',
+            }}
+        >
             <h2>Procedure: Add Owner</h2>
-            <form onSubmit={handleSubmit} style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
-                <div >
-                    <label>username</label>
+
+            {/* Display error message */}
+            {errorMessage && (
+                <div
+                    style={{
+                        backgroundColor: '#f8d7da',
+                        color: '#842029',
+                        border: '1px solid #f5c2c7',
+                        padding: '10px',
+                        borderRadius: '5px',
+                        marginBottom: '10px',
+                    }}
+                >
+                    <strong>Error:</strong> {errorMessage}
+                </div>
+            )}
+
+            {/* Display success message */}
+            {successMessage && (
+                <div
+                    style={{
+                        backgroundColor: '#d1e7dd',
+                        color: '#0f5132',
+                        border: '1px solid #badbcc',
+                        padding: '10px',
+                        borderRadius: '5px',
+                        marginBottom: '10px',
+                    }}
+                >
+                    {successMessage}
+                </div>
+            )}
+
+            <form
+                onSubmit={handleSubmit}
+                style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(2, 1fr)',
+                    gap: '10px',
+                }}
+            >
+                <div>
+                    <label>Username</label>
                     <input
                         type="text"
                         name="username"
@@ -56,8 +111,8 @@ const AddOwner = () => {
                         style={{ width: '100%', padding: '5px' }}
                     />
                 </div>
-                <div >
-                    <label>first_name</label>
+                <div>
+                    <label>First Name</label>
                     <input
                         type="text"
                         name="firstName"
@@ -66,8 +121,8 @@ const AddOwner = () => {
                         style={{ width: '100%', padding: '5px' }}
                     />
                 </div>
-                <div >
-                    <label>last_name</label>
+                <div>
+                    <label>Last Name</label>
                     <input
                         type="text"
                         name="lastName"
@@ -76,8 +131,8 @@ const AddOwner = () => {
                         style={{ width: '100%', padding: '5px' }}
                     />
                 </div>
-                <div >
-                    <label>address</label>
+                <div>
+                    <label>Address</label>
                     <input
                         type="text"
                         name="address"
@@ -86,8 +141,8 @@ const AddOwner = () => {
                         style={{ width: '100%', padding: '5px' }}
                     />
                 </div>
-                <div style={{ gridColumn: 'span 2' }} >
-                    <label>birthdate</label>
+                <div style={{ gridColumn: 'span 2' }}>
+                    <label>Birthdate</label>
                     <input
                         type="date"
                         name="birthdate"
@@ -96,7 +151,7 @@ const AddOwner = () => {
                         style={{ width: '100%', padding: '5px' }}
                     />
                 </div>
-                             
+
                 <div style={{ gridColumn: 'span 1', textAlign: 'center' }}>
                     <button
                         type="button"
@@ -128,7 +183,6 @@ const AddOwner = () => {
                     </button>
                 </div>
             </form>
-             
         </div>
     );
 };

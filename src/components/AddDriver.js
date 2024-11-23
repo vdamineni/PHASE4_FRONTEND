@@ -10,6 +10,8 @@ const AddDriverRole = () => {
         driver_experience: '',        
     });
 
+    const [errorMessage, setErrorMessage] = useState(''); // For error messages
+    const [successMessage, setSuccessMessage] = useState(''); // For success messages
     const navigate = useNavigate();
 
     const handleChange = (e) => {
@@ -24,6 +26,8 @@ const AddDriverRole = () => {
             license_type: '',
             driver_experience: '',            
         });
+        setErrorMessage(''); // Clear error message
+        setSuccessMessage(''); // Clear success message
         navigate('/driver'); // Navigate back to the Driver screen
     };
 
@@ -31,11 +35,16 @@ const AddDriverRole = () => {
         e.preventDefault();
         try {
             const response = await axios.post('http://localhost:3001/add_driver_role', formData);
-            alert(response.data); // Show success message
-            handleCancel(); // Clear the form and navigate back
+            setSuccessMessage(response.data); // Show success message
+            setErrorMessage(''); // Clear any previous error message
+            // Do not call handleCancel immediately, let the user see the success message
+            setTimeout(() => {
+                handleCancel(); // Clear the form and navigate back after a short delay
+            }, 3000); // Delay for 3 seconds to show the success message
         } catch (err) {
-            console.error('Error:', err.message);
-            alert('Error: ' + err.message); // Show error message
+            console.error('Error:', err.response?.data || err.message);
+            setErrorMessage(err.response?.data || 'An unexpected error occurred.'); // Show error message from the backend
+            setSuccessMessage(''); // Clear success message
         }
     };
 
@@ -52,6 +61,21 @@ const AddDriverRole = () => {
             }}
         >
             <h2>Procedure: Add Driver Role</h2>
+
+            {/* Display error message if any */}
+            {errorMessage && (
+                <div style={{ color: 'red', marginBottom: '10px' }}>
+                    <strong>Error:</strong> {errorMessage}
+                </div>
+            )}
+
+            {/* Display success message if any */}
+            {successMessage && (
+                <div style={{ color: 'green', marginBottom: '10px' }}>
+                    <strong>Success:</strong> {successMessage}
+                </div>
+            )}
+
             <form onSubmit={handleAdd} style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
                 <div>
                     <label>Username</label>
@@ -74,7 +98,7 @@ const AddDriverRole = () => {
                     />
                 </div>
                 <div>
-                    <label>License_type</label>
+                    <label>License Type</label>
                     <input
                         type="text"
                         name="license_type"
@@ -84,7 +108,7 @@ const AddDriverRole = () => {
                     />
                 </div>
                 <div>
-                    <label>Driver_experience</label>
+                    <label>Driver Experience</label>
                     <input
                         type="number"
                         name="driver_experience"
