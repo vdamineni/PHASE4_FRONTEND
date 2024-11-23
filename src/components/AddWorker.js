@@ -5,9 +5,9 @@ import { useNavigate } from 'react-router-dom';
 const AddWorkerRole = () => {
     const [formData, setFormData] = useState({
         username: '',  
-                       
     });
 
+    const [errorMessage, setErrorMessage] = useState(null);  // State to hold error messages
     const navigate = useNavigate();
 
     const handleChange = (e) => {
@@ -18,7 +18,6 @@ const AddWorkerRole = () => {
         // Clear the form and navigate back to the Driver screen
         setFormData({
             username: '',
-                       
         });
         navigate('/service'); // Navigate back to the Driver screen
     };
@@ -28,10 +27,15 @@ const AddWorkerRole = () => {
         try {
             const response = await axios.post('http://localhost:3001/add_worker_role', formData);
             alert(response.data); // Show success message
+            setErrorMessage(null); // Clear any previous error message
             handleCancel(); // Clear the form and navigate back
         } catch (err) {
             console.error('Error:', err.message);
-            alert('Error: ' + err.message); // Show error message
+            if (err.response && err.response.data) {
+                setErrorMessage(err.response.data); // Set the error message received from the backend
+            } else {
+                setErrorMessage('An unexpected error occurred'); // Fallback error message
+            }
         }
     };
 
@@ -47,7 +51,7 @@ const AddWorkerRole = () => {
                 backgroundColor: '#f9f9f9',
             }}
         >
-            <h2>Procedure: Add Woker Role</h2>
+            <h2>Procedure: Add Worker Role</h2>
             <form onSubmit={handleAdd} style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
                 <div>
                     <label>Username</label>
@@ -59,7 +63,13 @@ const AddWorkerRole = () => {
                         style={{ width: '100%', padding: '5px', marginTop: '5px' }}
                     />
                 </div>
-                               
+                
+                {errorMessage && (
+                    <div style={{ gridColumn: 'span 2', color: 'red', marginTop: '10px' }}>
+                        <strong>Error: </strong>{errorMessage}  {/* Display the specific error message */}
+                    </div>
+                )}
+                
                 <div style={{ gridColumn: 'span 2', display: 'flex', justifyContent: 'space-between' }}>
                     <button
                         type="button"

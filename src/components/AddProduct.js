@@ -9,6 +9,7 @@ const AddProduct = () => {
         weight: '',
     });
 
+    const [errorMessage, setErrorMessage] = useState(null);  // State to hold error messages
     const navigate = useNavigate();
 
     const handleChange = (e) => {
@@ -16,13 +17,13 @@ const AddProduct = () => {
     };
 
     const handleCancel = () => {
-        // Clear the form and navigate back
+        
         setFormData({
             barcode: '',
             name: '',
             weight: '',
         });
-        navigate('/product'); // Navigate back to the Product screen
+        navigate('/product'); 
     };
 
     const handleAdd = async (e) => {
@@ -30,10 +31,16 @@ const AddProduct = () => {
         try {
             const response = await axios.post('http://localhost:3001/add_product', formData);
             alert(response.data); // Show success message
+            setErrorMessage(null); // Clear any previous error message
             handleCancel(); // Clear the form and navigate back
         } catch (err) {
             console.error('Error:', err.message);
-            alert('Error: ' + err.message); // Show error message
+            // Check for the specific error message from the backend
+            if (err.response && err.response.data) {
+                setErrorMessage(err.response.data);  // Set the error message received from the backend
+            } else {
+                setErrorMessage('An unexpected error occurred');  // Fallback error message
+            }
         }
     };
 
@@ -88,6 +95,14 @@ const AddProduct = () => {
                         style={{ width: '100%', padding: '5px', marginTop: '5px' }}
                     />
                 </div>
+
+                {/* Display the specific error message */}
+                {errorMessage && (
+                    <div style={{ gridColumn: 'span 2', color: 'red', marginTop: '10px' }}>
+                        <strong>Error: </strong>{errorMessage}
+                    </div>
+                )}
+
                 <div
                     style={{
                         gridColumn: 'span 2',

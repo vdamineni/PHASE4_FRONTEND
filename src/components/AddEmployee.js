@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-// import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 
 const AddEmployee = () => {
@@ -16,6 +15,8 @@ const AddEmployee = () => {
         salary: '',
     });
 
+    const [errorMessage, setErrorMessage] = useState('');
+    const [successMessage, setSuccessMessage] = useState('');
     const navigate = useNavigate();
     
     const handleChange = (e) => {
@@ -27,36 +28,47 @@ const AddEmployee = () => {
         console.log('Submitting Data:', formData); // Debug log
         try {
             const response = await axios.post('http://localhost:3001/addEmployee', formData);
-            alert(response.data);
+            setSuccessMessage(response.data);
+            setErrorMessage(''); // Clear any previous error message
         } catch (err) {
-            console.error('Error:', err.message);
-            alert('Error: ' + err.message);
+            console.error('Error:', err.response?.data || err.message);
+            setErrorMessage(err.response?.data || 'An unexpected error occurred.');
+            setSuccessMessage(''); // Clear any previous success message
         }
     };
 
     const handleCancel = () => {
-        // Clear all input fields
         setFormData({
             username: '',
-        firstName: '',
-        lastName: '',        
-        address: '',
-        birthdate: '',
-        taxID: '',
-        hiredDate: '',        
-        experience: '',
-        salary: '',
+            firstName: '',
+            lastName: '',        
+            address: '',
+            birthdate: '',
+            taxID: '',
+            hiredDate: '',        
+            experience: '',
+            salary: '',
         });
-         navigate('/employee'); // Navigate back to the Employee screen
+        setErrorMessage('');
+        setSuccessMessage('');
+        navigate('/employee'); // Navigate back to the Employee screen
     };
-    // };
 
-   
-        return (
+    return (
         <div style={{ maxWidth: '800px', margin: '20px auto', fontFamily: 'Arial, sans-serif', padding: '10px', border: '1px solid #ccc', borderRadius: '5px', backgroundColor: '#f9f9f9' }}>
             <h2>Procedure: Add Employee</h2>
+            {errorMessage && (
+                <div style={{ color: 'red', marginBottom: '10px' }}>
+                    <strong>Error:</strong> {errorMessage}
+                </div>
+            )}
+            {successMessage && (
+                <div style={{ color: 'green', marginBottom: '10px' }}>
+                    {successMessage}
+                </div>
+            )}
             <form onSubmit={handleSubmit} style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
-                <div >
+                <div>
                     <label>username</label>
                     <input
                         type="text"
@@ -65,7 +77,7 @@ const AddEmployee = () => {
                         onChange={handleChange}                        
                         style={{ width: '100%', padding: '5px' }}
                     />
-                    </div>
+                </div>
                 <div>
                     <label>first_name</label>
                     <input
@@ -75,8 +87,8 @@ const AddEmployee = () => {
                         onChange={handleChange}                        
                         style={{ width: '100%', padding: '5px' }}
                     />
-                    </div>  
-                 <div>
+                </div>  
+                <div>
                     <label>last_name</label>
                     <input
                         type="text"
@@ -86,7 +98,7 @@ const AddEmployee = () => {
                         style={{ width: '100%', padding: '5px' }}
                     />
                 </div>   
-                 <div >
+                <div>
                     <label>address</label>
                     <input
                         type="text"
@@ -105,8 +117,8 @@ const AddEmployee = () => {
                         onChange={handleChange}
                         style={{ width: '100%', padding: '5px' }}
                     />
-                    </div>
-                 <div>
+                </div>
+                <div>
                     <label>taxID</label>
                     <input
                         type="text"
@@ -115,8 +127,8 @@ const AddEmployee = () => {
                         onChange={handleChange}
                         style={{ width: '100%', padding: '5px' }}
                     />
-                    </div>
-                    <div>
+                </div>
+                <div>
                     <label>hired_date</label>
                     <input
                         type="date"
@@ -125,8 +137,8 @@ const AddEmployee = () => {
                         onChange={handleChange}
                         style={{ width: '100%', padding: '5px' }}
                     />
-                    </div>
-                    <div>
+                </div>
+                <div>
                     <label>experience</label>
                     <input
                         type="number"
@@ -146,7 +158,6 @@ const AddEmployee = () => {
                         style={{ width: '100%', padding: '5px' }}
                     />
                 </div>               
-               
                 <div style={{ gridColumn: 'span 1', textAlign: 'center' }}>
                     <button
                         type="button"
@@ -177,12 +188,9 @@ const AddEmployee = () => {
                         Add
                     </button>
                 </div>
-                </form>
-               
-           
-                 </div>
-            
+            </form>
+        </div>
     );
- };
+};
 
 export default AddEmployee;
