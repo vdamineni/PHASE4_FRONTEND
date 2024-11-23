@@ -57,14 +57,14 @@ const DisplayServiceView = () => {
                 <tbody>
                     {services.map((service, index) => (
                         <tr key={index}>
-                            <td style={tableCellStyle}>{service.id}</td>
+                            <td style={tableCellStyle}>{service.ID}</td>
                             <td style={tableCellStyle}>{service.long_name}</td>
                             <td style={tableCellStyle}>{service.home_base}</td>
                             <td style={tableCellStyle}>{service.manager}</td>
-                            <td style={tableCellStyle}>{service.totalsales}</td>
-                            <td style={tableCellStyle}>{service.totalproducts}</td>
-                            <td style={tableCellStyle}>{service.totalcost}</td>
-                            <td style={tableCellStyle}>{service.totalweight}</td>
+                            <td style={tableCellStyle}>{service.revenue}</td>
+                            <td style={tableCellStyle}>{service.products_carried}</td>
+                            <td style={tableCellStyle}>{service.cost_carried}</td>
+                            <td style={tableCellStyle}>{service.weight_carried}</td>
                         </tr>
                     ))}
                 </tbody>

@@ -57,14 +57,14 @@ const DisplayEmployeeView = () => {
                 <tbody>
                     {employees.map((employee, index) => (
                         <tr key={index}>
-                            <td style={tableCellStyle}>{employee.EmployeeUsername}</td>
-                            <td style={tableCellStyle}>{employee.TaxIdentifier}</td>
+                            <td style={tableCellStyle}>{employee.username}</td>
+                            <td style={tableCellStyle}>{employee.taxID}</td>
                             <td style={tableCellStyle}>{employee.salary}</td>
-                            <td style={tableCellStyle}>{employee.HiringDate}</td>
-                            <td style={tableCellStyle}>{employee.ExperienceLevel}</td>
-                            <td style={tableCellStyle}>{employee.LicenseIdentifier}</td>
-                            <td style={tableCellStyle}>{employee.DrivingExperience}</td>
-                            <td style={tableCellStyle}>{employee.IsManager}</td>
+                            <td style={tableCellStyle}>{employee.hired}</td>
+                            <td style={tableCellStyle}>{employee.employee_experience}</td>
+                            <td style={tableCellStyle}>{employee.licenseID}</td>
+                            <td style={tableCellStyle}>{employee.driving_experience}</td>
+                            <td style={tableCellStyle}>{employee.manager_status}</td>
                         </tr>
                     ))}
                 </tbody>

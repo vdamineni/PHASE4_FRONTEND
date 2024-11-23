@@ -53,10 +53,10 @@ const DisplayDriverView = () => {
                 <tbody>
                     {drivers.map((driver, index) => (
                         <tr key={index}>
-                            <td style={tableCellStyle}>{driver.DriverUsername}</td>
-                            <td style={tableCellStyle}>{driver.LicenseIdentifier}</td>
-                            <td style={tableCellStyle}>{driver.DrivingExperience}</td>
-                            <td style={tableCellStyle}>{driver.NumberOfVansControlled}</td>
+                            <td style={tableCellStyle}>{driver.username}</td>
+                            <td style={tableCellStyle}>{driver.licenseID}</td>
+                            <td style={tableCellStyle}>{driver.successful_trips}</td>
+                            <td style={tableCellStyle}>{driver.num_vans}</td>
                         </tr>
                     ))}
                 </tbody>

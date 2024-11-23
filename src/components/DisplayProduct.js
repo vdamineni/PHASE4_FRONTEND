@@ -54,11 +54,11 @@ const DisplayProductView = () => {
                 <tbody>
                     {products.map((product, index) => (
                         <tr key={index}>
-                            <td style={tableCellStyle}>{product.iname}</td>
-                            <td style={tableCellStyle}>{product.label}</td>
-                            <td style={tableCellStyle}>{product.packagesavailable}</td>
-                            <td style={tableCellStyle}>{product.minprice}</td>
-                            <td style={tableCellStyle}>{product.maxprice}</td>
+                            <td style={tableCellStyle}>{product.product_name}</td>
+                            <td style={tableCellStyle}>{product.location}</td>
+                            <td style={tableCellStyle}>{product.amount_available}</td>
+                            <td style={tableCellStyle}>{product.low_price}</td>
+                            <td style={tableCellStyle}>{product.high_price}</td>
                         </tr>
                     ))}
                 </tbody>
