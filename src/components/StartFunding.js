@@ -6,12 +6,15 @@ const StartFunding = () => {
     const [formData, setFormData] = useState({
         owner: '',
         amount: '',
-        long_name: '',        
+        long_name: '',
         fund_date: '',
     });
 
     const [owners, setOwners] = useState([]);
     const [businesses, setBusinesses] = useState([]);
+    const [message, setMessage] = useState(null); // Feedback message
+    const [messageType, setMessageType] = useState(''); // 'success' or 'error'
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -23,6 +26,8 @@ const StartFunding = () => {
                 setOwners(ownersResponse.data);
                 setBusinesses(businessesResponse.data);
             } catch (err) {
+                setMessage('Error fetching data.');
+                setMessageType('error');
                 console.error('Error fetching data:', err.message);
             }
         };
@@ -34,18 +39,31 @@ const StartFunding = () => {
     };
 
     const handleCancel = () => {
+        setMessage(null); // Clear feedback message
         navigate('/business'); // Navigate back to the Business screen
     };
 
     const handleFund = async (e) => {
         e.preventDefault();
+        const dataToSubmit = {};
+    for (const key in formData) {
+        dataToSubmit[key] = formData[key] === "" ? null : formData[key];
+    }
         try {
-            const response = await axios.post('http://localhost:3001/start_funding', formData);
-            alert(response.data); // Show success message
-            handleCancel(); // Clear the form and navigate back
+            const response = await axios.post('http://localhost:3001/start_funding', dataToSubmit);
+            setMessage(response.data); // Display success message
+            setMessageType('success');
+            setTimeout(() => {
+                setMessage(null); // Clear message after 3 seconds
+                handleCancel(); // Navigate back
+            }, 3000);
         } catch (err) {
+            setMessage(err.response?.data || 'An unexpected error occurred.');
+            setMessageType('error');
             console.error('Error:', err.message);
-            alert('Error: ' + err.message); // Show error message
+            setTimeout(() => {
+                setMessage(null); // Clear message after 3 seconds                
+            }, 3000);
         }
     };
 
@@ -62,12 +80,26 @@ const StartFunding = () => {
             }}
         >
             <h2>Procedure: Start Funding</h2>
+            {message && (
+                <div
+                    style={{
+                        marginBottom: '15px',
+                        padding: '10px',
+                        color: messageType === 'success' ? 'green' : 'red',
+                        border: `1px solid ${messageType === 'success' ? 'green' : 'red'}`,
+                        borderRadius: '5px',
+                        backgroundColor: messageType === 'success' ? '#eaffea' : '#ffeaea',
+                    }}
+                >
+                    {message}
+                </div>
+            )}
             <form onSubmit={handleFund} style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
                 <div>
                     <label>Owner</label>
                     <select
                         name="owner"
-                        value={formData.ip_owner}
+                        value={formData.owner}
                         onChange={handleChange}
                         style={{ width: '100%', padding: '5px', marginTop: '5px' }}
                     >
@@ -84,16 +116,16 @@ const StartFunding = () => {
                     <input
                         type="number"
                         name="amount"
-                        value={formData.ip_amount}
+                        value={formData.amount}
                         onChange={handleChange}
                         style={{ width: '100%', padding: '5px', marginTop: '5px' }}
                     />
                 </div>
                 <div>
-                    <label>Long_name</label>
+                    <label>Long Name</label>
                     <select
                         name="long_name"
-                        value={formData.ip_long_name}
+                        value={formData.long_name}
                         onChange={handleChange}
                         style={{ width: '100%', padding: '5px', marginTop: '5px' }}
                     >
@@ -106,11 +138,11 @@ const StartFunding = () => {
                     </select>
                 </div>
                 <div>
-                    <label>Fund_date</label>
+                    <label>Fund Date</label>
                     <input
                         type="date"
                         name="fund_date"
-                        value={formData.ip_fund_date}
+                        value={formData.fund_date}
                         onChange={handleChange}
                         style={{ width: '100%', padding: '5px', marginTop: '5px' }}
                     />

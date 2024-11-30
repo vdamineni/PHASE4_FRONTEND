@@ -9,6 +9,8 @@ const RemoveVan = () => {
   });
 
   const [vanIds, setVanIds] = useState([]);
+  const [message, setMessage] = useState(null); // Success or error message
+  const [messageType, setMessageType] = useState(""); // 'success' or 'error'
   const navigate = useNavigate();
 
   // Fetch available van IDs for the dropdown
@@ -19,6 +21,8 @@ const RemoveVan = () => {
         setVanIds(response.data);
       } catch (err) {
         console.error("Error fetching van IDs:", err.message);
+        setMessage("Failed to load van IDs.");
+        setMessageType("error");
       }
     };
     fetchVanIds();
@@ -34,13 +38,37 @@ const RemoveVan = () => {
 
   const handleRemove = async (e) => {
     e.preventDefault();
+
+ const dataToSubmit = {};
+    for (const key in formData) {
+        dataToSubmit[key] = formData[key] === "" ? null : formData[key];
+    }
+
     try {
-      const response = await axios.post("http://localhost:3001/remove_van", formData); // Replace with your backend endpoint
-      alert(response.data.message || "Van removed successfully!");
-      navigate("/van"); // Navigate back to the Van screen
+      const response = await axios.post("http://localhost:3001/remove_van", dataToSubmit); // Replace with your backend endpoint
+      setMessage(response.data.message || "Van removed successfully!");
+      setMessageType("success");
+
+      setTimeout(() => navigate("/van"), 2000); // Redirect after 2 seconds
+
+       setTimeout(() => {
+                setMessage(null); // Clear the message after 3 seconds
+                 setFormData({
+            id: '',
+            tag: ''
+               });
+            }, 3000);
     } catch (err) {
       console.error("Error removing van:", err.message);
-      alert("Error removing van: " + err.message);
+
+      // Fetch SQL server error details, if provided
+      const errorMsg = err.response?.data || "Error occurred while removing the van.";
+      setMessage(errorMsg);
+      setMessageType("error");
+      setTimeout(() => {
+                setMessage(null); // Clear message after 3 seconds    
+                setMessageType(' ');
+            }, 3000);
     }
   };
 
@@ -50,16 +78,32 @@ const RemoveVan = () => {
         maxWidth: "600px",
         margin: "20px auto",
         fontFamily: "Arial, sans-serif",
-        padding: "10px",
+        padding: "20px",
         border: "1px solid #ccc",
-        borderRadius: "5px",
+        borderRadius: "8px",
         backgroundColor: "#f9f9f9",
       }}
     >
       <h2>Procedure: Remove Van</h2>
+
+      {message && (
+        <div
+          style={{
+            marginBottom: "15px",
+            padding: "10px",
+            color: messageType === "success" ? "green" : "red",
+            border: `1px solid ${messageType === "success" ? "green" : "red"}`,
+            borderRadius: "5px",
+            backgroundColor: messageType === "success" ? "#eaffea" : "#ffeaea",
+          }}
+        >
+          {message}
+        </div>
+      )}
+
       <form onSubmit={handleRemove} style={{ display: "grid", gap: "20px" }}>
         <div>
-          <label>ID</label>
+          <label>Van ID</label>
           <select
             name="id"
             value={formData.id}

@@ -57,14 +57,14 @@ const DisplayLocationView = () => {
                 <tbody>
                     {locations.map((location, index) => (
                         <tr key={index}>
-                            <td style={tableCellStyle}>{location.locationlabel}</td>
-                            <td style={tableCellStyle}>{location.businessname}</td>
-                            <td style={tableCellStyle}>{location.xcord}</td>
-                            <td style={tableCellStyle}>{location.ycord}</td>
-                            <td style={tableCellStyle}>{location.totalcapacity}</td>
-                            <td style={tableCellStyle}>{location.numberofvans}</td>
-                            <td style={tableCellStyle}>{location.vanidentifier}</td>
-                            <td style={tableCellStyle}>{location.remainingcapacity}</td>
+                            <td style={tableCellStyle}>{location.label}</td>
+                            <td style={tableCellStyle}>{location.long_name}</td>
+                            <td style={tableCellStyle}>{location.x_coord}</td>
+                            <td style={tableCellStyle}>{location.y_coord}</td>
+                            <td style={tableCellStyle}>{location.space}</td>
+                            <td style={tableCellStyle}>{location.num_vans}</td>
+                            <td style={tableCellStyle}>{location.van_ids}</td>
+                            <td style={tableCellStyle}>{location.remaining_capacity}</td>
                         </tr>
                     ))}
                 </tbody>

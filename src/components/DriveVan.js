@@ -10,6 +10,8 @@ const DriveVan = () => {
   });
 
   const [vanIds, setVanIds] = useState([]);
+  const [message, setMessage] = useState(null); // Message to show success or error feedback
+  const [messageType, setMessageType] = useState(""); // 'success' or 'error'
   const navigate = useNavigate();
 
   // Fetch available van IDs for the dropdown
@@ -20,6 +22,8 @@ const DriveVan = () => {
         setVanIds(response.data);
       } catch (err) {
         console.error("Error fetching van IDs:", err.message);
+        setMessage("Failed to load van IDs.");
+        setMessageType("error");
       }
     };
     fetchVanIds();
@@ -35,13 +39,35 @@ const DriveVan = () => {
 
   const handleDrive = async (e) => {
     e.preventDefault();
+
+     const dataToSubmit = {};
+    for (const key in formData) {
+        dataToSubmit[key] = formData[key] === "" ? null : formData[key];
+    }
+
+
     try {
-      const response = await axios.post("http://localhost:3001/drive_van", formData); // Replace with your backend endpoint
-      alert(response.data.message || "Van driven successfully!");
-      navigate("/van"); // Navigate back to the Van screen
+      const response = await axios.post("http://localhost:3001/drive_van", dataToSubmit); // Replace with your backend endpoint
+      setMessage(response.data.message || "Van driven successfully!");
+      setMessageType("success");
+     setTimeout(() => {
+                setMessage(null); // Clear the message after 3 seconds
+                setFormData({
+        id: "",
+        tag: "",
+        destination: "",
+      });
+
+            }, 3000);
+
     } catch (err) {
       console.error("Error driving van:", err.message);
-      alert("Error driving van: " + err.message);
+      setMessage(err.response?.data || "Error occurred while driving the van.");
+      setMessageType("error");
+      setTimeout(() => {
+                setMessage(null); // Clear message after 3 seconds    
+                setMessageType(' ');
+            }, 3000);
     }
   };
 
@@ -51,13 +77,29 @@ const DriveVan = () => {
         maxWidth: "600px",
         margin: "20px auto",
         fontFamily: "Arial, sans-serif",
-        padding: "10px",
+        padding: "20px",
         border: "1px solid #ccc",
-        borderRadius: "5px",
+        borderRadius: "8px",
         backgroundColor: "#f9f9f9",
       }}
     >
       <h2>Procedure: Drive Van</h2>
+
+      {message && (
+        <div
+          style={{
+            marginBottom: "15px",
+            padding: "10px",
+            color: messageType === "success" ? "green" : "red",
+            border: `1px solid ${messageType === "success" ? "green" : "red"}`,
+            borderRadius: "5px",
+            backgroundColor: messageType === "success" ? "#eaffea" : "#ffeaea",
+          }}
+        >
+          {message}
+        </div>
+      )}
+
       <form onSubmit={handleDrive} style={{ display: "grid", gap: "20px" }}>
         <div>
           <label>ID</label>

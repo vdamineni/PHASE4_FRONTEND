@@ -10,6 +10,9 @@ const AddLocation = () => {
         space: ''
     });
 
+    const [message, setMessage] = useState(null); // Feedback message
+    const [messageType, setMessageType] = useState(''); // 'success' or 'error'
+
     const navigate = useNavigate();
 
     const handleChange = (e) => {
@@ -24,18 +27,37 @@ const AddLocation = () => {
             y_coord: '',
             space: ''
         });
+        setMessage(null); // Clear feedback message
         navigate('/service'); // Navigate back to the Services screen
     };
 
     const handleAdd = async (e) => {
         e.preventDefault();
+         const dataToSubmit = {};
+    for (const key in formData) {
+        dataToSubmit[key] = formData[key] === "" ? null : formData[key];
+    }
         try {
-            const response = await axios.post('http://localhost:3001/add_location', formData);
-            alert(response.data); // Show success message
-            handleCancel(); // Clear the form and navigate back
+            const response = await axios.post('http://localhost:3001/add_location', dataToSubmit);
+            setMessage(response.data); // Display success message
+            setMessageType('success');
+            setTimeout(() => {
+                setMessage(null); // Clear message after 3 seconds
+                setFormData({
+            label: '',
+            x_coord: '',
+            y_coord: '',
+            space: ''
+        });
+            }, 3000);
         } catch (err) {
-            console.error('Error adding location:', err.message);
-            alert('Error: ' + err.message); // Show error message
+            setMessage(err.response?.data || 'An unexpected error occurred.'); // Display error message
+            setMessageType('error');
+            console.error('Error:', err.message);
+             setTimeout(() => {
+                setMessage(null); // Clear message after 3 seconds
+                
+            }, 3000);
         }
     };
 
@@ -52,6 +74,20 @@ const AddLocation = () => {
             }}
         >
             <h2>Procedure: Add Location</h2>
+            {message && (
+                <div
+                    style={{
+                        marginBottom: '15px',
+                        padding: '10px',
+                        color: messageType === 'success' ? 'green' : 'red',
+                        border: `1px solid ${messageType === 'success' ? 'green' : 'red'}`,
+                        borderRadius: '5px',
+                        backgroundColor: messageType === 'success' ? '#eaffea' : '#ffeaea',
+                    }}
+                >
+                    {message}
+                </div>
+            )}
             <form onSubmit={handleAdd} style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
                 <div>
                     <label>label</label>

@@ -58,15 +58,15 @@ const DisplayOwnerView = () => {
                 <tbody>
                     {owners.map((owner, index) => (
                         <tr key={index}>
-                             <td style={tableCellStyle}>{owner.OwnerUsername}</td>
-                             <td style={tableCellStyle}>{owner.FirstName}</td>
-                             <td style={tableCellStyle}>{owner.LastName}</td>
-                             <td style={tableCellStyle}>{owner.Address}</td>
-                             <td style={tableCellStyle}>{owner.NumberOfFundedBusinesses}</td>
-                             <td style={tableCellStyle}>{owner.NumberOfLocations}</td>
-                             <td style={tableCellStyle}>{owner.HighestRating}</td>
-                             <td style={tableCellStyle}>{owner.LowestRating}</td>
-                             <td style={tableCellStyle}>{owner.TotalDebt}</td>
+                             <td style={tableCellStyle}>{owner.username}</td>
+                             <td style={tableCellStyle}>{owner.first_name}</td>
+                             <td style={tableCellStyle}>{owner.last_name}</td>
+                             <td style={tableCellStyle}>{owner.address}</td>
+                             <td style={tableCellStyle}>{owner.num_businesses}</td>
+                             <td style={tableCellStyle}>{owner.num_places}</td>
+                             <td style={tableCellStyle}>{owner.highs}</td>
+                             <td style={tableCellStyle}>{owner.lows}</td>
+                             <td style={tableCellStyle}>{owner.debt}</td>
                         </tr>
                     ))}
                 </tbody>
