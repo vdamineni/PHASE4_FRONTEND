@@ -7,11 +7,12 @@ const PurchaseProduct = () => {
         longName: '',
         id: '',
         tag: '',
-        barcode: '',        
+        barcode: '',
         quantity: '',
-        
     });
 
+    const [message, setMessage] = useState(null);
+    const [messageType, setMessageType] = useState(''); // 'success' or 'error'
     const navigate = useNavigate();
 
     const handleChange = (e) => {
@@ -24,22 +25,47 @@ const PurchaseProduct = () => {
             longName: '',
             id: '',
             tag: '',
-            barcode: '',            
+            barcode: '',
             quantity: '',
-            
         });
         navigate('/product'); // Navigate back to the Product screen
     };
 
     const handlePurchase = async (e) => {
         e.preventDefault();
+
+        const { longName, id, tag, barcode, quantity } = formData;
+
+        // Basic validation
+        if (!longName || !id || !tag || !barcode || !quantity) {
+            setMessage('Please fill in all fields before submitting.');
+            setMessageType('error');
+            return;
+        }
+
         try {
-            const response = await axios.post('http://localhost:3001/purchase_product', formData);
-            alert(response.data); // Show success message
-            handleCancel(); // Clear the form and navigate back
+            const response = await axios.post(
+                'http://localhost:3001/purchase_product',
+                formData
+            );
+            setMessage('Product purchased successfully!');
+            setMessageType('success');
+
+            // Clear the form after a successful submission
+            setFormData({
+                longName: '',
+                id: '',
+                tag: '',
+                barcode: '',
+                quantity: '',
+            });
+
+            // Redirect after success
+            setTimeout(() => navigate('/product'), 2000);
         } catch (err) {
             console.error('Error:', err.message);
-            alert('Error: ' + err.message); // Show error message
+            setMessage('Error purchasing product: ' + err.message);
+            setMessageType('error');
         }
     };
 
@@ -49,13 +75,33 @@ const PurchaseProduct = () => {
                 maxWidth: '700px',
                 margin: '20px auto',
                 fontFamily: 'Arial, sans-serif',
-                padding: '10px',
+                padding: '20px',
                 border: '1px solid #ccc',
-                borderRadius: '5px',
+                borderRadius: '8px',
                 backgroundColor: '#f9f9f9',
             }}
         >
             <h2>Procedure: Purchase Product</h2>
+
+            {/* Display feedback message */}
+            {message && (
+                <div
+                    style={{
+                        marginBottom: '15px',
+                        padding: '10px',
+                        color: messageType === 'success' ? 'green' : 'red',
+                        border: `1px solid ${
+                            messageType === 'success' ? 'green' : 'red'
+                        }`,
+                        borderRadius: '5px',
+                        backgroundColor:
+                            messageType === 'success' ? '#eaffea' : '#ffeaea',
+                    }}
+                >
+                    {message}
+                </div>
+            )}
+
             <form
                 onSubmit={handlePurchase}
                 style={{
@@ -114,7 +160,7 @@ const PurchaseProduct = () => {
                         style={{ width: '100%', padding: '5px', marginTop: '5px' }}
                     />
                 </div>
-                
+
                 <div
                     style={{
                         gridColumn: 'span 2',

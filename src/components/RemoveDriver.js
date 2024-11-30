@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 const RemoveDriver = () => {
     const [username, setUsername] = useState('');
     const [users, setUsers] = useState([]);
+    const [serverMessage, setServerMessage] = useState({ text: '', type: '' }); // For success or error messages
     const navigate = useNavigate();
 
     // Fetch the list of drivers when the component mounts
@@ -15,6 +16,7 @@ const RemoveDriver = () => {
                 setUsers(response.data);
             } catch (err) {
                 console.error('Error fetching drivers:', err.message);
+                setServerMessage({ text: 'Failed to load drivers.', type: 'error' });
             }
         };
         fetchUsers();
@@ -24,11 +26,14 @@ const RemoveDriver = () => {
         e.preventDefault();
         try {
             const response = await axios.post('http://localhost:3001/remove_driver_role', { username });
-            alert(response.data); // Show success message
-            navigate('/driver'); // Navigate back to Driver screen
+            setServerMessage({ text: response.data.message || 'Driver role removed successfully!', type: 'success' });
+            setTimeout(() => navigate('/driver'), 2000); // Navigate back after 2 seconds
         } catch (err) {
-            console.error('Error:', err.message);
-            alert('Error: ' + err.message); // Show error message
+            console.error('Error removing driver role:', err.message);
+            setServerMessage({
+                text: err.response?.data || 'An error occurred while removing the driver role.',
+                type: 'error',
+            });
         }
     };
 
@@ -49,7 +54,23 @@ const RemoveDriver = () => {
             }}
         >
             <h2>Procedure: Remove Driver Role</h2>
-            <form onSubmit={handleRemove} style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '20px' }}>
+
+            {serverMessage.text && (
+                <div
+                    style={{
+                        marginBottom: '15px',
+                        padding: '10px',
+                        color: serverMessage.type === 'success' ? 'green' : 'red',
+                        border: `1px solid ${serverMessage.type === 'success' ? 'green' : 'red'}`,
+                        borderRadius: '5px',
+                        backgroundColor: serverMessage.type === 'success' ? '#eaffea' : '#ffeaea',
+                    }}
+                >
+                    {serverMessage.text}
+                </div>
+            )}
+
+            <form onSubmit={handleRemove} style={{ display: 'grid', gap: '20px' }}>
                 <div>
                     <label>Username</label>
                     <select

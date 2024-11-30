@@ -10,6 +10,9 @@ const AddService = () => {
         manager: '',
     });
 
+    const [message, setMessage] = useState(null); // Message to display
+    const [messageType, setMessageType] = useState(''); // 'success' or 'error'
+
     const navigate = useNavigate();
 
     const handleChange = (e) => {
@@ -24,6 +27,7 @@ const AddService = () => {
             home_base: '',
             manager: '',
         });
+        setMessage(null); // Clear the message
         navigate('/service'); // Navigate back to the Service screen
     };
 
@@ -31,11 +35,15 @@ const AddService = () => {
         e.preventDefault();
         try {
             const response = await axios.post('http://localhost:3001/add_service', formData);
-            alert(response.data); // Show success message
-            handleCancel(); // Clear the form and navigate back
+            setMessage(response.data); // Display success message
+            setMessageType('success');
+            setTimeout(() => {
+                setMessage(null); // Clear the message after 3 seconds
+                handleCancel(); // Clear the form and navigate back
+            }, 3000);
         } catch (err) {
-            console.error('Error:', err.message);
-            alert('Error: ' + err.message); // Show error message
+            setMessage(err.response?.data || 'An unexpected error occurred.'); // Display error message
+            setMessageType('error');
         }
     };
 
@@ -52,6 +60,20 @@ const AddService = () => {
             }}
         >
             <h2>Procedure: Add Service</h2>
+            {message && (
+                <div
+                    style={{
+                        marginBottom: '15px',
+                        padding: '10px',
+                        color: messageType === 'success' ? 'green' : 'red',
+                        border: `1px solid ${messageType === 'success' ? 'green' : 'red'}`,
+                        borderRadius: '5px',
+                        backgroundColor: messageType === 'success' ? '#eaffea' : '#ffeaea',
+                    }}
+                >
+                    {message}
+                </div>
+            )}
             <form onSubmit={handleAdd} style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
                 <div>
                     <label>id</label>

@@ -6,23 +6,27 @@ const TakeOverVan = () => {
     const [formData, setFormData] = useState({
         username: '',
         id: '',
-        tag: ''
+        tag: '',
     });
 
     const [usernames, setUsernames] = useState([]); // Dropdown options for usernames
     const [ids, setIds] = useState([]); // Dropdown options for van IDs
+    const [message, setMessage] = useState(null); // Feedback message
+    const [messageType, setMessageType] = useState(''); // 'success' or 'error'
     const navigate = useNavigate();
 
-    // Fetch dropdown options
+    // Fetch dropdown options on component mount
     useEffect(() => {
         const fetchDropdownData = async () => {
             try {
-                const usernameResponse = await axios.get('http://localhost:3001/get_usernames'); // Replace with your backend endpoint
-                const idResponse = await axios.get('http://localhost:3001/get_van_ids'); // Replace with your backend endpoint
+                const usernameResponse = await axios.get('http://localhost:3001/get_usernames'); // Backend endpoint for usernames
+                const idResponse = await axios.get('http://localhost:3001/get_van_ids'); // Backend endpoint for van IDs
                 setUsernames(usernameResponse.data);
                 setIds(idResponse.data);
             } catch (err) {
                 console.error('Error fetching dropdown data:', err.message);
+                setMessage('Failed to fetch dropdown data.');
+                setMessageType('error');
             }
         };
         fetchDropdownData();
@@ -33,12 +37,12 @@ const TakeOverVan = () => {
     };
 
     const handleCancel = () => {
-        // Clear the form and navigate back
         setFormData({
             username: '',
             id: '',
-            tag: ''
+            tag: '',
         });
+        setMessage(null); // Clear feedback message
         navigate('/van'); // Navigate back to the Van screen
     };
 
@@ -46,11 +50,16 @@ const TakeOverVan = () => {
         e.preventDefault();
         try {
             const response = await axios.post('http://localhost:3001/takeover_van', formData);
-            alert(response.data); // Show success message
-            handleCancel(); // Clear the form and navigate back
+            setMessage(response.data); // Show success message
+            setMessageType('success');
+            setTimeout(() => {
+                setMessage(null); // Clear message after 3 seconds
+                handleCancel(); // Navigate back
+            }, 3000);
         } catch (err) {
             console.error('Error taking over van:', err.message);
-            alert('Error: ' + err.message); // Show error message
+            setMessage(err.response?.data || 'An unexpected error occurred.');
+            setMessageType('error');
         }
     };
 
@@ -60,16 +69,30 @@ const TakeOverVan = () => {
                 maxWidth: '600px',
                 margin: '20px auto',
                 fontFamily: 'Arial, sans-serif',
-                padding: '10px',
+                padding: '20px',
                 border: '1px solid #ccc',
-                borderRadius: '5px',
+                borderRadius: '8px',
                 backgroundColor: '#f9f9f9',
             }}
         >
             <h2>Procedure: Take Over Van</h2>
+            {message && (
+                <div
+                    style={{
+                        marginBottom: '15px',
+                        padding: '10px',
+                        color: messageType === 'success' ? 'green' : 'red',
+                        border: `1px solid ${messageType === 'success' ? 'green' : 'red'}`,
+                        borderRadius: '5px',
+                        backgroundColor: messageType === 'success' ? '#eaffea' : '#ffeaea',
+                    }}
+                >
+                    {message}
+                </div>
+            )}
             <form onSubmit={handleAdd} style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
                 <div>
-                    <label>username</label>
+                    <label>Username</label>
                     <select
                         name="username"
                         value={formData.username}
@@ -101,7 +124,7 @@ const TakeOverVan = () => {
                     </select>
                 </div>
                 <div>
-                    <label>tag</label>
+                    <label>Tag</label>
                     <input
                         type="text"
                         name="tag"

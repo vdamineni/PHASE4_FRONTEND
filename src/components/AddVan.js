@@ -14,6 +14,9 @@ const AddVan = () => {
 
     const [ids, setIds] = useState([]); // Dropdown options for IDs
     const [drivers, setDrivers] = useState([]); // Dropdown options for drivers
+    const [message, setMessage] = useState(null); // Message to display
+    const [messageType, setMessageType] = useState(''); // 'success' or 'error'
+
     const navigate = useNavigate();
 
     // Fetch options for dropdowns
@@ -52,11 +55,15 @@ const AddVan = () => {
         e.preventDefault();
         try {
             const response = await axios.post('http://localhost:3001/add_van', formData);
-            alert(response.data); // Show success message
-            handleCancel(); // Clear the form and navigate back
+            setMessage(response.data); // Display success message
+            setMessageType('success');
+            setTimeout(() => {
+                setMessage(null); // Clear the message after 3 seconds
+                handleCancel(); // Clear the form and navigate back
+            }, 3000);
         } catch (err) {
-            console.error('Error adding van:', err.message);
-            alert('Error: ' + err.message); // Show error message
+            setMessage(err.response?.data || 'An unexpected error occurred.'); // Display error message
+            setMessageType('error');
         }
     };
 
@@ -73,6 +80,20 @@ const AddVan = () => {
             }}
         >
             <h2>Procedure: Add Van</h2>
+            {message && (
+                <div
+                    style={{
+                        marginBottom: '15px',
+                        padding: '10px',
+                        color: messageType === 'success' ? 'green' : 'red',
+                        border: `1px solid ${messageType === 'success' ? 'green' : 'red'}`,
+                        borderRadius: '5px',
+                        backgroundColor: messageType === 'success' ? '#eaffea' : '#ffeaea',
+                    }}
+                >
+                    {message}
+                </div>
+            )}
             <form onSubmit={handleAdd} style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
                 <div>
                     <label>ID</label>

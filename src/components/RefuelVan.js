@@ -10,6 +10,8 @@ const RefuelVan = () => {
   });
 
   const [vanIds, setVanIds] = useState([]);
+  const [message, setMessage] = useState(null); // Success or error message
+  const [messageType, setMessageType] = useState(""); // 'success' or 'error'
   const navigate = useNavigate();
 
   // Fetch the available Van IDs for the dropdown
@@ -20,6 +22,8 @@ const RefuelVan = () => {
         setVanIds(response.data);
       } catch (err) {
         console.error("Error fetching van IDs:", err.message);
+        setMessage("Failed to load van IDs.");
+        setMessageType("error");
       }
     };
     fetchVanIds();
@@ -35,13 +39,32 @@ const RefuelVan = () => {
 
   const handleRefuel = async (e) => {
     e.preventDefault();
+    const { id, more_fuel } = formData;
+
+    // Basic validation
+    if (!id || !more_fuel || more_fuel <= 0) {
+      setMessage("Please provide a valid Van ID and fuel amount.");
+      setMessageType("error");
+      return;
+    }
+
     try {
       const response = await axios.post("http://localhost:3001/refuel_van", formData); // Backend API endpoint to refuel van
-      alert(response.data.message || "Van refueled successfully!");
-      navigate("/van"); // Navigate back to the Van screen
+      setMessage(response.data.message || "Van refueled successfully!");
+      setMessageType("success");
+
+      // Clear form after successful submission
+      setFormData({
+        id: "",
+        tag: "",
+        more_fuel: "",
+      });
+
+      setTimeout(() => navigate("/van"), 2000); // Navigate back after 2 seconds
     } catch (err) {
       console.error("Error refueling van:", err.message);
-      alert("Error refueling van: " + err.message);
+      setMessage(err.response?.data || "Error occurred while refueling the van.");
+      setMessageType("error");
     }
   };
 
@@ -51,16 +74,32 @@ const RefuelVan = () => {
         maxWidth: "600px",
         margin: "20px auto",
         fontFamily: "Arial, sans-serif",
-        padding: "10px",
+        padding: "20px",
         border: "1px solid #ccc",
-        borderRadius: "5px",
+        borderRadius: "8px",
         backgroundColor: "#f9f9f9",
       }}
     >
       <h2>Procedure: Refuel Van</h2>
+
+      {message && (
+        <div
+          style={{
+            marginBottom: "15px",
+            padding: "10px",
+            color: messageType === "success" ? "green" : "red",
+            border: `1px solid ${messageType === "success" ? "green" : "red"}`,
+            borderRadius: "5px",
+            backgroundColor: messageType === "success" ? "#eaffea" : "#ffeaea",
+          }}
+        >
+          {message}
+        </div>
+      )}
+
       <form onSubmit={handleRefuel} style={{ display: "grid", gap: "20px" }}>
         <div>
-          <label>Id</label>
+          <label>Van ID</label>
           <select
             name="id"
             value={formData.id}
@@ -88,7 +127,7 @@ const RefuelVan = () => {
           />
         </div>
         <div>
-          <label>More Fuel</label>
+          <label>Additional Fuel</label>
           <input
             type="number"
             name="more_fuel"

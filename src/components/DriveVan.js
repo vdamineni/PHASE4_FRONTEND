@@ -10,6 +10,8 @@ const DriveVan = () => {
   });
 
   const [vanIds, setVanIds] = useState([]);
+  const [message, setMessage] = useState(null); // Message to show success or error feedback
+  const [messageType, setMessageType] = useState(""); // 'success' or 'error'
   const navigate = useNavigate();
 
   // Fetch available van IDs for the dropdown
@@ -20,6 +22,8 @@ const DriveVan = () => {
         setVanIds(response.data);
       } catch (err) {
         console.error("Error fetching van IDs:", err.message);
+        setMessage("Failed to load van IDs.");
+        setMessageType("error");
       }
     };
     fetchVanIds();
@@ -35,13 +39,34 @@ const DriveVan = () => {
 
   const handleDrive = async (e) => {
     e.preventDefault();
+
+    const { id, tag, destination } = formData;
+
+    // Basic validation
+    if (!id || !tag || !destination) {
+      setMessage("Please fill in all fields before proceeding.");
+      setMessageType("error");
+      return;
+    }
+
     try {
       const response = await axios.post("http://localhost:3001/drive_van", formData); // Replace with your backend endpoint
-      alert(response.data.message || "Van driven successfully!");
-      navigate("/van"); // Navigate back to the Van screen
+      setMessage(response.data.message || "Van driven successfully!");
+      setMessageType("success");
+
+      // Clear the form after a successful submission
+      setFormData({
+        id: "",
+        tag: "",
+        destination: "",
+      });
+
+      // Navigate back to Van screen after 2 seconds
+      setTimeout(() => navigate("/van"), 2000);
     } catch (err) {
       console.error("Error driving van:", err.message);
-      alert("Error driving van: " + err.message);
+      setMessage(err.response?.data || "Error occurred while driving the van.");
+      setMessageType("error");
     }
   };
 
@@ -51,13 +76,29 @@ const DriveVan = () => {
         maxWidth: "600px",
         margin: "20px auto",
         fontFamily: "Arial, sans-serif",
-        padding: "10px",
+        padding: "20px",
         border: "1px solid #ccc",
-        borderRadius: "5px",
+        borderRadius: "8px",
         backgroundColor: "#f9f9f9",
       }}
     >
       <h2>Procedure: Drive Van</h2>
+
+      {message && (
+        <div
+          style={{
+            marginBottom: "15px",
+            padding: "10px",
+            color: messageType === "success" ? "green" : "red",
+            border: `1px solid ${messageType === "success" ? "green" : "red"}`,
+            borderRadius: "5px",
+            backgroundColor: messageType === "success" ? "#eaffea" : "#ffeaea",
+          }}
+        >
+          {message}
+        </div>
+      )}
+
       <form onSubmit={handleDrive} style={{ display: "grid", gap: "20px" }}>
         <div>
           <label>ID</label>
