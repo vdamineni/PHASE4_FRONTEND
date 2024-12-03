@@ -8,6 +8,9 @@ const FireEmployee = () => {
         id: '',
     });
 
+    const [message, setMessage] = useState(null); // Feedback message
+    const [messageType, setMessageType] = useState(''); // 'success' or 'error'
+
     const navigate = useNavigate();
 
     const handleChange = (e) => {
@@ -20,18 +23,34 @@ const FireEmployee = () => {
             username: '',
             id: '',
         });
+        setMessage(null); // Clear feedback message
         navigate('/employee'); // Navigate back to the Employee screen
     };
 
     const handleRemove = async (e) => {
         e.preventDefault();
+        const dataToSubmit = {};
+    for (const key in formData) {
+        dataToSubmit[key] = formData[key] === "" ? null : formData[key];
+    }
         try {
-            const response = await axios.post('http://localhost:3001/fire_employee', formData);
-            alert(response.data); // Show success message
-            handleCancel(); // Clear the form and navigate back
+            const response = await axios.post('http://localhost:3001/fire_employee', dataToSubmit);
+            setMessage(response.data); // Display success message
+            setMessageType('success');
+            setTimeout(() => {
+                setMessage(null); // Clear message after 3 seconds
+                setFormData({
+            username: '',
+            id: '',
+        });
+            }, 3000);
         } catch (err) {
+            setMessage(err.response?.data || 'An unexpected error occurred.');
+            setMessageType('error');
             console.error('Error:', err.message);
-            alert('Error: ' + err.message); // Show error message
+            setTimeout(() => {
+                setMessage(null); // Clear message after 3 seconds                
+            }, 3000);
         }
     };
 
@@ -48,6 +67,20 @@ const FireEmployee = () => {
             }}
         >
             <h2>Procedure: Fire Employee</h2>
+            {message && (
+                <div
+                    style={{
+                        marginBottom: '15px',
+                        padding: '10px',
+                        color: messageType === 'success' ? 'green' : 'red',
+                        border: `1px solid ${messageType === 'success' ? 'green' : 'red'}`,
+                        borderRadius: '5px',
+                        backgroundColor: messageType === 'success' ? '#eaffea' : '#ffeaea',
+                    }}
+                >
+                    {message}
+                </div>
+            )}
             <form onSubmit={handleRemove} style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '15px' }}>
                 <div>
                     <label>Username</label>

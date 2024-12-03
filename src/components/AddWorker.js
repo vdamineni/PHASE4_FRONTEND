@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -5,9 +6,10 @@ import { useNavigate } from 'react-router-dom';
 const AddWorkerRole = () => {
     const [formData, setFormData] = useState({
         username: '',  
-                       
     });
 
+    const [errorMessage, setErrorMessage] = useState();  // State to hold error messages
+    const [successMessage, setSuccessMessage] = useState('');
     const navigate = useNavigate();
 
     const handleChange = (e) => {
@@ -18,20 +20,37 @@ const AddWorkerRole = () => {
         // Clear the form and navigate back to the Driver screen
         setFormData({
             username: '',
-                       
         });
+         setErrorMessage('');
+        setSuccessMessage('');
         navigate('/service'); // Navigate back to the Driver screen
     };
 
-    const handleAdd = async (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        const dataToSubmit = {};
+    for (const key in formData) {
+        dataToSubmit[key] = formData[key] === "" ? null : formData[key];
+    }
         try {
-            const response = await axios.post('http://localhost:3001/add_worker_role', formData);
-            alert(response.data); // Show success message
-            handleCancel(); // Clear the form and navigate back
+            const response = await axios.post('http://localhost:3001/add_worker_role', dataToSubmit);
+            setSuccessMessage(response.data);
+            setErrorMessage(''); // Clear any previous error message
+            setTimeout(() => {
+                setSuccessMessage(' '); // Clear message after 3 seconds
+                setFormData({
+            username: '',
+        });
+            }, 3000);
         } catch (err) {
+            console.error('Error:', err.response?.data || err.message);
+            setErrorMessage(err.response?.data || 'An unexpected error occurred.');
+            setSuccessMessage(''); // Clear any previous success message
             console.error('Error:', err.message);
-            alert('Error: ' + err.message); // Show error message
+             setTimeout(() => {
+                setErrorMessage(''); // Clear message after 3 seconds
+                 setSuccessMessage(' ');
+            }, 3000);
         }
     };
 
@@ -47,8 +66,18 @@ const AddWorkerRole = () => {
                 backgroundColor: '#f9f9f9',
             }}
         >
-            <h2>Procedure: Add Woker Role</h2>
-            <form onSubmit={handleAdd} style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
+            <h2>Procedure: Add Worker Role</h2>
+            {errorMessage && (
+                <div style={{ color: 'red', marginBottom: '10px' }}>
+                    <strong>Error:</strong> {errorMessage}
+                </div>
+            )}
+            {successMessage && (
+                <div style={{ color: 'green', marginBottom: '10px' }}>
+                    {successMessage}
+                </div>
+            )}
+            <form onSubmit={handleSubmit} style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
                 <div>
                     <label>Username</label>
                     <input
@@ -59,7 +88,8 @@ const AddWorkerRole = () => {
                         style={{ width: '100%', padding: '5px', marginTop: '5px' }}
                     />
                 </div>
-                               
+                
+                              
                 <div style={{ gridColumn: 'span 2', display: 'flex', justifyContent: 'space-between' }}>
                     <button
                         type="button"

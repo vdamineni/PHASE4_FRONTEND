@@ -9,6 +9,8 @@ const AddProduct = () => {
         weight: '',
     });
 
+    const [errorMessage, setErrorMessage] = useState('');
+    const [successMessage, setSuccessMessage] = useState('');
     const navigate = useNavigate();
 
     const handleChange = (e) => {
@@ -16,24 +18,44 @@ const AddProduct = () => {
     };
 
     const handleCancel = () => {
-        // Clear the form and navigate back
+        
         setFormData({
             barcode: '',
             name: '',
             weight: '',
         });
-        navigate('/product'); // Navigate back to the Product screen
+        setErrorMessage('');
+        setSuccessMessage('');
+        navigate('/product'); 
     };
 
     const handleAdd = async (e) => {
         e.preventDefault();
+        const dataToSubmit = {};
+    for (const key in formData) {
+        dataToSubmit[key] = formData[key] === "" ? null : formData[key];
+    }
         try {
-            const response = await axios.post('http://localhost:3001/add_product', formData);
-            alert(response.data); // Show success message
-            handleCancel(); // Clear the form and navigate back
+            const response = await axios.post('http://localhost:3001/add_product', dataToSubmit);
+            setSuccessMessage(response.data);
+            setErrorMessage(''); // Clear any previous error message
+             setTimeout(() => {
+                setSuccessMessage(null); // Clear message after 3 seconds
+                 setFormData({
+            barcode: '',
+            name: '',
+            weight: '',
+        });
+            }, 3000);
+            
         } catch (err) {
-            console.error('Error:', err.message);
-            alert('Error: ' + err.message); // Show error message
+           console.error('Error:', err.response?.data || err.message);
+            setErrorMessage(err.response?.data || 'An unexpected error occurred.');
+            setSuccessMessage(''); // Clear any previous success message
+            setTimeout(() => {
+                setSuccessMessage(null); // Clear message after 3 seconds
+                setErrorMessage(null);                 
+            }, 3000);
         }
     };
 
@@ -50,6 +72,16 @@ const AddProduct = () => {
             }}
         >
             <h2>Procedure: Add Product</h2>
+            {errorMessage && (
+                <div style={{ color: 'red', marginBottom: '10px' }}>
+                    <strong>Error:</strong> {errorMessage}
+                </div>
+            )}
+            {successMessage && (
+                <div style={{ color: 'green', marginBottom: '10px' }}>
+                    {successMessage}
+                </div>
+            )}
             <form
                 onSubmit={handleAdd}
                 style={{
@@ -88,6 +120,8 @@ const AddProduct = () => {
                         style={{ width: '100%', padding: '5px', marginTop: '5px' }}
                     />
                 </div>
+
+                
                 <div
                     style={{
                         gridColumn: 'span 2',
