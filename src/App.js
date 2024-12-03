@@ -1,6 +1,6 @@
+
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import './App.css'; // Ensure your CSS file is updated
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import MainScreen from './components/MainScreen';
 import EmployeeScreen from './components/EmployeeScreen';
 import BusinessScreen from './components/BusinessScreen';
@@ -36,88 +36,50 @@ import LoadVanScreen from './components/LoadVan';
 import RefuelVanScreen from './components/RefuelVan';
 import DriveVanScreen from './components/DriveVan';
 import RemoveVanScreen from './components/RemoveVan';
-import { NavLink } from 'react-router-dom';
-
 
 function App() {
     return (
         <Router>
-            <div className="App">
-                {/* Navigation Bar */}
-                <nav className="navbar">
-                <h1 className="navbar-title">Company Management App</h1>
-                <ul className="navbar-links">
-                    <li>
-                        <Link to="/">Home</Link>
-                    </li>
-                    <li>
-                        <Link to="/employee">Employees</Link>
-                    </li>
-                    <li>
-                        <Link to="/product">Products</Link>
-                    </li>
-                    <li>
-                        <Link to="/business">Businesses</Link>
-                    </li>
-                    <li>
-                        <Link to="/driver">Drivers</Link>
-                    </li>
-                    <li>
-                        <Link to="/van">Vans</Link>
-                    </li>
-                </ul>
-            </nav>
-            
+            <Routes>
+                <Route path="/" element={<MainScreen />} />
+                <Route path="/employee" element={<EmployeeScreen />} />
+                <Route path="/employee/add" element={<AddEmployeeScreen />} />
+                <Route path="/employee/remove" element={<FireEmployeeScreen />} />
+                <Route path="/employee/hire" element={<HireEmployeeScreen />} />
+                <Route path="/business" element={<BusinessScreen />} />
+                <Route path="/business/add-owner" element={<AddOwnerScreen />} />
+                <Route path="/business/add-business" element={<AddBusinessScreen />} />
+                <Route path="/business/start-funding" element={<StartFundingScreen />} />
+                <Route path="/driver" element={<DriverScreen />} />
+                <Route path="/driver/add-driver" element={<AddDriverScreen />} />
+                <Route path="/driver/remove-driver" element={<RemoveDriverScreen />} />
+                <Route path="/product" element={<ProductScreen />} />
+                <Route path="/product/add-product" element={<AddProductScreen />} />
+                <Route path="/product/purchase-product" element={<PurchaseProductScreen />} />
+                <Route path="/product/remove-product" element={<RemoveProductScreen />} />
+                <Route path="/service" element={<ServiceScreen />} />
+                <Route path="/service/add-service" element={<AddServiceScreen />} />
+                <Route path="/service/manage-service" element={<ManageServiceScreen />} />
+                <Route path="/service/add-location" element={<AddLocationScreen />} />
+                <Route path="/service/add-worker" element={<AddWorkerScreen />} />
+                <Route path="/van" element={<VanScreen />} />
+                <Route path="/van/add-van" element={<AddvanScreen />} />
+                <Route path="/van/takeover-van" element={<TakeOverVanScreen />} />
+                <Route path="/van/load-van" element={<LoadVanScreen />} />
+                <Route path="/van/refuel-van" element={<RefuelVanScreen />} />
+                <Route path="/van/drive-van" element={<DriveVanScreen />} />
+                <Route path="/van/remove-van" element={<RemoveVanScreen />} />
+                <Route path="/views" element={<ViewsScreen />} />
+                <Route path="/views/display-owner" element={<DisplayOwnerScreen />} />
+                <Route path="/views/display-employee" element={<DisplayEmployeeScreen />} />
+                <Route path="/views/display-driver" element={<DisplayDriverScreen />} />
+                <Route path="/views/display-location" element={<DisplayLocationScreen />} />
+                <Route path="/views/display-product" element={<DisplayProductScreen />} />
+                <Route path="/views/display-service" element={<DisplayServiceScreen />} />
 
-
-                {/* Main Content */}
-                <div className="content">
-                    <Routes>
-                        <Route path="/" element={<MainScreen />} />
-                        <Route path="/employee" element={<EmployeeScreen />} />
-                        <Route path="/employee/add" element={<AddEmployeeScreen />} />
-                        <Route path="/employee/remove" element={<FireEmployeeScreen />} />
-                        <Route path="/employee/hire" element={<HireEmployeeScreen />} />
-                        <Route path="/business" element={<BusinessScreen />} />
-                        <Route path="/business/add-owner" element={<AddOwnerScreen />} />
-                        <Route path="/business/add-business" element={<AddBusinessScreen />} />
-                        <Route path="/business/start-funding" element={<StartFundingScreen />} />
-                        <Route path="/driver" element={<DriverScreen />} />
-                        <Route path="/driver/add-driver" element={<AddDriverScreen />} />
-                        <Route path="/driver/remove-driver" element={<RemoveDriverScreen />} />
-                        <Route path="/product" element={<ProductScreen />} />
-                        <Route path="/product/add-product" element={<AddProductScreen />} />
-                        <Route path="/product/purchase-product" element={<PurchaseProductScreen />} />
-                        <Route path="/product/remove-product" element={<RemoveProductScreen />} />
-                        <Route path="/service" element={<ServiceScreen />} />
-                        <Route path="/service/add-service" element={<AddServiceScreen />} />
-                        <Route path="/service/manage-service" element={<ManageServiceScreen />} />
-                        <Route path="/service/add-location" element={<AddLocationScreen />} />
-                        <Route path="/service/add-worker" element={<AddWorkerScreen />} />
-                        <Route path="/van" element={<VanScreen />} />
-                        <Route path="/van/add-van" element={<AddvanScreen />} />
-                        <Route path="/van/takeover-van" element={<TakeOverVanScreen />} />
-                        <Route path="/van/load-van" element={<LoadVanScreen />} />
-                        <Route path="/van/refuel-van" element={<RefuelVanScreen />} />
-                        <Route path="/van/drive-van" element={<DriveVanScreen />} />
-                        <Route path="/van/remove-van" element={<RemoveVanScreen />} />
-                        <Route path="/views" element={<ViewsScreen />} />
-                        <Route path="/views/display-owner" element={<DisplayOwnerScreen />} />
-                        <Route path="/views/display-employee" element={<DisplayEmployeeScreen />} />
-                        <Route path="/views/display-driver" element={<DisplayDriverScreen />} />
-                        <Route path="/views/display-location" element={<DisplayLocationScreen />} />
-                        <Route path="/views/display-product" element={<DisplayProductScreen />} />
-                        <Route path="/views/display-service" element={<DisplayServiceScreen />} />
-                    </Routes>
-                </div>
-            </div>
+            </Routes>
         </Router>
     );
-
-
-
 }
-
-
 
 export default App;
